@@ -1,5 +1,8 @@
 package ru.yandex.praktikum;
 
+import com.github.javafaker.Faker;
+import com.github.javafaker.service.FakeValuesService;
+import com.github.javafaker.service.RandomService;
 import io.qameta.allure.Step;
 import io.restassured.RestAssured;
 import io.restassured.config.LogConfig;
@@ -14,6 +17,7 @@ import ru.yandex.praktikum.steps.DeleteUser;
 import ru.yandex.praktikum.steps.LoginUser;
 
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -26,19 +30,21 @@ public class BaseUserApiTest {
 
     protected Map<String, CreateUserRequest> createdUsers;
 
+    protected Faker faker;
+
     @Step("Generate random email")
     public String generateRandomEmail() {
-        return RandomStringUtils.randomAlphabetic(5) + "@yandex.ru";
+        return faker.internet().emailAddress();
     }
 
     @Step("Generate random password")
     public String generateRandomPassword() {
-        return RandomStringUtils.randomAlphabetic(10);
+        return faker.internet().password(7, 10);
     }
 
     @Step("Generate random name")
     public String generateRandomName() {
-        return RandomStringUtils.randomAlphabetic(6);
+        return faker.address().firstName();
     }
 
     @Step("Compare response status code with expected status code")
@@ -79,6 +85,8 @@ public class BaseUserApiTest {
         deleteUser = new DeleteUser();
 
         createdUsers = new TreeMap<String, CreateUserRequest>();
+
+        faker = new Faker(new Locale("en-US"));
     }
 
     @After
